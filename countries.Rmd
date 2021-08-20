@@ -1,0 +1,41 @@
+---
+title: "Fun with flags!"
+author: "David Marquinez Burgos"
+date: "20/8/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown and Leaflet
+
+This document was created on 20 August 2021.
+
+```{r echo=FALSE}
+if(!file.exists("countries.csv"))
+   download.file("https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv","countries.csv")
+df <- read.csv("countries.csv")
+```
+
+## Map
+
+Map of the world with flags.
+
+```{r echo=FALSE , warning=FALSE , message=FALSE}
+library(leaflet)
+library(dplyr)
+link <- "https://github.com/stefangabos/world_countries/raw/master/flags/24x24/"
+df <- df %>% rowwise() %>% mutate(icon = paste(link,tolower(country),".png",sep = ""))
+flags <- icons(
+  iconUrl = df$icon,
+  iconWidth = 31*215/230, iconHeight = 31,
+  iconAnchorX = 31*215/230/2, iconAnchorY = 16
+)
+
+df %>% leaflet() %>% addTiles() %>% addMarkers(popup = df$name, icon = flags)
+
+```
+
+
